@@ -181,9 +181,9 @@ function PrintTableTotalData(doc, totalData) {
   ];
 
   data_entries.forEach((line_data, line_data_i) => {
-    console.log(line_data);
     const label = line_data[0];
     let data = Object.values(line_data[1]);
+
     data = [label, ...data];
 
     const { sacs, retours, ajouts, tonnage, camions, dechires, bonus } = data;
@@ -205,7 +205,6 @@ function PrintTableTotalData(doc, totalData) {
       line_text += it;
     });
 
-    //console.log(line_text);
     liney += fontSize;
     rect.x = PAGE_MARG;
     rect.w = 0;
