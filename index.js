@@ -1,62 +1,87 @@
-import GetRoulemenDaysData from "./GetRoulemenDaysData.mjs";
-import {
-  DrawLogoWithDate,
-  doc,
-  PAGE_MARG,
-  PrintTableTotalData,
-} from "./Print.mjs";
+import { jsPDF } from "jspdf";
 
-//console.log(GetRoulemenDaysData(2024, 1, 21));
-
-const totalData = {
-  DATE: { y: 2024, m: 0 },
-  DATA: {
-    A: {
-      sacs: 117525,
-      retours: 0,
-      ajouts: 0,
-      tonnage: 5876.25,
-      camions: 230,
-      dechires: 234,
-      bonus: 689.75,
-    },
-    B: {
-      sacs: 172441,
-      retours: 0,
-      ajouts: 0,
-      tonnage: 8622.05,
-      camions: 331,
-      dechires: 386,
-      bonus: 716.55,
-    },
-    C: {
-      sacs: 181506,
-      retours: 0,
-      ajouts: 0,
-      tonnage: 9075.3,
-      camions: 314,
-      dechires: 324,
-      bonus: 1880.8,
-    },
-    D: {
-      sacs: 187021,
-      retours: 0,
-      ajouts: 0,
-      tonnage: 9351.050000000001,
-      camions: 317,
-      dechires: 367,
-      bonus: 842,
-    },
-    TOTAL: {
-      sacs: 658493,
-      retours: 0,
-      ajouts: 0,
-      tonnage: 32924.65,
-      camions: 1114,
-      dechires: 1260,
-      bonus: 4129.1,
-    },
-  },
+const data = {
+  team: "A",
+  y: 2024,
+  m: 8,
+  d: 30,
+  sup: "ALBERT KANKOBWE - 刚果贝",
+  shift: "NUIT - 夜班 - 23h00 - 07h00",
+  s: "N",
+  camions: 0,
+  sacs: 15880,
+  t: 794,
+  dechires: 0,
 };
 
-PrintTableTotalData(doc, totalData);
+function drawChineseEnglishTextLine(doc, x, y, fontSize, tokens) {
+  const orig_font_size = doc.getFontSize();
+  doc.setFontSize(fontSize);
+  let orig_x = x;
+
+  const lat_font_name = "helvetica";
+  const zh_font_name = "DroidSansFallback";
+  tokens.forEach((t, i) => {
+    const k = Object.keys(t)[0];
+    const text = Object.values(t)[0];
+
+    if (k === "lat") {
+      doc.setFont(lat_font_name);
+      doc.text(orig_x, y, text);
+    }
+
+    if (k === "zh") {
+      doc.setFont(zh_font_name);
+      doc.text(orig_x, y, text);
+    }
+    const { w } = doc.getTextDimensions(text);
+    orig_x += w;
+  });
+  doc.setFontSize(orig_font_size);
+  doc.setFont(lat_font_name);
+}
+
+function printBaozhuang(data) {
+  /*
+{
+  team: "A",
+  y: 2024,
+  m: 8,
+  d: 30,
+  sup: "ALBERT KANKOBWE - 刚果贝",
+  shift: "NUIT - 夜班 - 23h00 - 07h00",
+  s: "N",
+  camions: 0,
+  sacs: 15880,
+  t: 794,
+  dechires: 0,
+};
+*/
+
+  const doc = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+  let r = doc.addFont(
+    "fonts/DroidSansFallback.ttf",
+    "DroidSansFallback",
+    "normal"
+  );
+
+  const fontSize = 12;
+  doc.setFontSize(fontSize);
+  const { team, s, y, m, d, sup, shift } = data;
+  const marg = 10;
+  const filename = `${team}_${s}_${y}_${m}_${d}.pdf`;
+  const tokens_sup = sup
+    .replaceAll(" -", "")
+    .split(" ")
+    .map((it, i) => (i === 2 ? { zh: it } : { lat: ` ${it} ` }));
+  const tokens_shift = shift
+    .replaceAll(" -", "")
+    .split(" ")
+    .map((it, i) => (i === 1 ? { zh: it } : { lat: ` ${it} ` }));
+
+  drawChineseEnglishTextLine(doc, marg, marg, fontSize, tokens_shift);
+
+  doc.save(filename);
+}
+
+printBaozhuang(data);
