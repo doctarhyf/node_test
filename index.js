@@ -147,8 +147,9 @@ function printBaozhuang(data) {
     const PHM = pageHeight - 2 * margin;
     vline(doc, pageWidth / 2, margin, PHM);
     hline(doc, margin, pageHeight / 3, PWM);
-    hline(doc, margin, (pageHeight / 3) * 2, PWM);
-    doc.rect(margin, margin, PWM, PHM);
+    //hline(doc, margin, (pageHeight / 3) * 2, PWM);
+    //doc.setLineDashPattern(["-"], 1);
+    //doc.rect(margin, margin, PWM, PHM);
   }
 
   function drawDate(doc, MARG, PW, PH, box) {
@@ -249,7 +250,6 @@ function printBaozhuang(data) {
     y: MARG,
   };
 
-  drawGrid(doc, MARG, PW, PH);
   //date
   cursor_box = drawDate(doc, MARG, PW, PH, cursor_box);
 
@@ -266,6 +266,12 @@ function printBaozhuang(data) {
     cursor_box.y + cursor_box.h + SPACE * 1.5,
     FONT_SIZE,
     tokens_title
+  );
+  hline(
+    doc,
+    cursor_box.x,
+    cursor_box.y + SPACE / 4,
+    getTextTokensDimensions(doc, FONT_SIZE, tokens_title).w
   );
 
   // equipe
@@ -331,7 +337,10 @@ function printBaozhuang(data) {
     tokens_dechires
   );
 
+  //grid
+  drawGrid(doc, MARG, PW, PH);
   doc.save(filename);
 }
 
+//console.log(Object.keys(printBaozhuang);
 printBaozhuang(data);
