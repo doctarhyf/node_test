@@ -4,7 +4,7 @@ import doc, { fontsize, marg } from "./pdf.mjs";
 
 function drawAgentStatCard(doc, i, agent, x, y) {
   if (agent.chef_deq === "OUI") agent.poste = "DEQ";
-  if (agent.is_exp === "OUI") agent.poste = "EXP";
+  if (agent.is_exp === "OUI") agent.poste = "EXPD";
 
   let { nom, postnom, prenom, poste, mingzi, matricule, phone, chef_deq } =
     agent;
@@ -66,7 +66,7 @@ function printChart(chart) {
   const flatchart = chart.flat();
 
   const { equipe, section } = flatchart[0];
-  const title = `${section} - ${equipe} / ${flatchart.length}`;
+  const title = `${section}, ${equipe} / ( ${flatchart.length} )`;
 
   doc.setTextColor("black");
   doc.text(title, marg, marg);
