@@ -1,6 +1,7 @@
 import { drawChineseEnglishTextLine } from "./prints_.mjs";
 import chart from "./chart.mjs";
 import doc, { fontsize, marg } from "./pdf.mjs";
+import { detectCharacterType, genZHLATTokens } from "./tokensgen.mjs";
 
 function drawAgentStatCard(doc, i, agent, x, y) {
   if (agent.chef_deq === "OUI") agent.poste = "DEQ";
@@ -57,7 +58,7 @@ function drawAgentStatCard(doc, i, agent, x, y) {
   return y;
 }
 
-function printChart(chart) {
+function printChart(chart, filename) {
   if (!chart) {
     throw new Error("Cant print undefined or empty Chart");
   }
@@ -67,6 +68,7 @@ function printChart(chart) {
 
   const { equipe, section } = flatchart[0];
   const title = `${section}, ${equipe} / ( ${flatchart.length} )`;
+  if (!filename) filename = `${title.replaceAll(" ", "_")}.pdf`;
 
   doc.setTextColor("black");
   doc.text(title, marg, marg);
@@ -75,7 +77,15 @@ function printChart(chart) {
   flatchart.map((agent, i) => {
     y = drawAgentStatCard(doc, i, agent, marg, y);
   });
+
+  doc.save(filename);
 }
 
-printChart(chart);
-doc.save("chart.pdf");
+const text =
+  "Hello 你好 this is my text 这是我写的字.\ni want to detech for 我需要在字母里面\n check for latin and english\n 看一下那些字母是中文那些事英文\n";
+
+const tk = genZHLATTokens(text);
+
+drawChineseEnglishTextLine(doc, 10, 10, 10, tk);
+doc.save("zhlat.pdf");
+//console.log(tk);
